@@ -3,6 +3,7 @@ require 'zip/zip'
 class Zippy
 
   include Enumerable
+  #extend Enumerable
 
 
   def initialize(filename=nil, entries={})
@@ -41,7 +42,7 @@ class Zippy
       if contents.is_a?(String)
         s.write contents
       elsif contents.respond_to?(:read)
-        s.write contents.read
+        s.write contents.read(1024) until contents.eof?
       elsif contents.respond_to?(:to_s)
         s.write contents.to_s
       else#Not sure these last two are different
@@ -105,19 +106,40 @@ class Zippy
 
 
   def self.create(filename, entries={}, &b)
+    File.unlink(filename) if File.exists?(filename)
     z = new(filename, entries, &b)
     z.close
     z
   end
 
   def self.open(filename)
-    raise(ArgumentError, "file \"#{filename}\" does not exist")
+    raise(ArgumentError, "file \"#{filename}\" does not exist") unless File.exists?(filename)
     z = new(filename)
     if block_given?
       yield z
       z.close
     end
     z
+  end
+
+  def self.each(filename)
+    open(filename) do |zip|
+      zip.each do |name|
+        yield name, zip[name]
+      end
+    end
+  end
+
+  def self.list(filename)
+    list = nil
+    open(filename){|z| list = z.paths }
+    list
+  end
+
+  def self.read(filename, entry)
+    content = nil
+    open(filename){|z| content = z[entry] }
+    content
   end
 
 

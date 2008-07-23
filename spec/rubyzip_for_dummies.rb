@@ -199,15 +199,28 @@ describe "Existing archive" do
   end
 
 
-  it "should be accessible" do
+  it "should be readable" do
     @zip.should include('bounce.jpg')
-    @zip['text.txt'].should == 'HUMBABA'
+    @zip['text.txt'].should =~ /HUMBABA/
+  end
+
+  it "should be editable" do
+    @zip['donkey'] = 'horse'
+    @zip.delete('bounce.jpg')
+    @zip.close
+    @zip = Zippy.open(@zip.filename)
+    @zip['donkey'].should == 'horse'
+    @zip.should_not include('bounce.jpg')
   end
 
 end
 
 
 describe "Zippy." do
+
+  before :each do
+    @filename = File.join(File.dirname(__FILE__), 'example.zip')
+  end
 
   it "create should yield self, write to the provided filename and close" do
     Zippy.create 'test.zip' do |zip|
@@ -226,6 +239,22 @@ describe "Zippy." do
 
   it "open should raise exception when file does not exist" do
     lambda{ Zippy.open('nonexistingfile') }.should raise_error(ArgumentError)
+  end
+
+  it "list should return an array of path names from the archive" do
+    list = Zippy.list(@filename)
+    ['bounce.jpg', 'text.txt'].each{|n| list.should include(n) }
+  end
+
+  it "each should iterate each entry name and its contents" do
+    names, contents = [], []
+    Zippy.each(@filename){|n,c| names << n; contents << c }
+    names.should_not be_empty
+    contents.should_not be_empty
+  end
+
+  it "read should return the contents of a specific entry in the archive" do
+    Zippy.read(@filename, 'text.txt').should =~ /HUMBABA/
   end
 
 end
