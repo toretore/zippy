@@ -1,0 +1,19 @@
+Zippy.create 'awsum.zip' do |zip|
+  zip['README'] = 'In Soviet Russia, README READSYOU'
+  zip['porn.mpeg'] = File.open('rick astley - never gonna give you up.mpg')
+end
+
+Zippy.list('awsum.zip') #=> ['README', 'porn.mpeg']
+
+Zippy.open('awsum.zip') do |zip|
+  zip['bin/hello_world'] = "#!/usr/bin/env ruby\n\nputs 'hello, zip world'"
+end
+
+
+
+#Your params as a zip
+#It's SAAS!
+require 'sinatra'
+get '/' do
+  Zippy.new{|z| params.each{|k,v| z[k] = v } }.data
+end
