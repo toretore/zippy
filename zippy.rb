@@ -189,7 +189,7 @@ private
 
 
   def autocommit?
-    @autocommit.nil? true : @autocommit
+    @autocommit.nil? ? true : @autocommit
   end
 
   def autocommit=(b)
