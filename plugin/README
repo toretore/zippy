@@ -1,0 +1,18 @@
+This plugin adds a template handler for the extension "zipper", so you
+could for example have a view show.zip.zipper which returns a zip file.
+The view file is evaluated as Ruby, inside a Zippy.new{|zip|} block.
+
+Example controller:
+def show
+  @gallery = Gallery.find(params[:id])
+  respond_to do |format|
+    format.html
+    format.zip
+  end
+end
+
+Example view:
+zip['description.txt'] = @gallery.description
+@gallery.photos.each do |photo|
+  zip["photo_#{photo.id}.png"] = File.open(photo.url)
+end
