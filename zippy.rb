@@ -6,6 +6,12 @@ class Zippy
   #extend Enumerable
 
 
+  #Make an archive
+  #Filename is optional; if none is provided, a generated, temporary
+  #filename will be used.
+  #If a block is provided, the archive is yielded
+  #Takes an optional second parameter which is a hash of entries that will
+  #be added after initialization
   def initialize(filename=nil, entries={})
     self.filename = filename if filename
     without_autocommit do
@@ -27,16 +33,20 @@ class Zippy
     size.zero?
   end
 
+  #Returns the full path to all entries in the archive
   def paths
     map
   end
 
 
+  #Read an entry
   def [](entry)
     return nil unless include?(entry)
     zipfile.read(entry)
   end
 
+  #Add or change an entry with the name +entry+
+  #+contents+ can be a string or an IO
   def []=(entry, contents)
     zipfile.get_output_stream entry do |s|
       if contents.is_a?(String)
@@ -54,6 +64,7 @@ class Zippy
   end
 
 
+  #Delete an entry
   def delete(*entries)
     entries.each do |entry|
       zipfile.remove(entry)
@@ -62,6 +73,7 @@ class Zippy
     entries
   end
 
+  #Rename an entry
   def rename(old_name, new_name)
     zipfile.rename(old_name, new_name)
     zipfile.commit if autocommit?
@@ -69,11 +81,15 @@ class Zippy
   end
 
 
+  #Close the archive for writing
   def close
     write(filename)
     zipfile.close
   end
 
+  #Write the archive to +filename+
+  #If a filename is not provided, it will write
+  #to the default filename (self.filename)
   def write(filename)
     return false if empty?
     zipfile.commit
@@ -83,6 +99,7 @@ class Zippy
     true
   end
 
+  #Returns the entire archive as a string
   def data
     return nil if empty?
     zipfile.commit
@@ -105,6 +122,10 @@ class Zippy
   end
 
 
+  #Create a new archive with the name +filename+, populate it
+  #and then close it
+  #
+  #Warning: Will overwrite existing file
   def self.create(filename, entries={}, &b)
     File.unlink(filename) if File.exists?(filename)
     z = new(filename, entries, &b)
@@ -112,6 +133,8 @@ class Zippy
     z
   end
 
+  #Works the same as new, but require's an explicit filename
+  #If a block is provided, it will be closed at the end of the block
   def self.open(filename)
     raise(ArgumentError, "file \"#{filename}\" does not exist") unless File.exists?(filename)
     z = new(filename)
@@ -122,6 +145,7 @@ class Zippy
     z
   end
 
+  #Iterate each entry name _and_ its contents in the archive +filename+
   def self.each(filename)
     open(filename) do |zip|
       zip.each do |name|
@@ -130,12 +154,17 @@ class Zippy
     end
   end
 
+  #Returns an array of entry names from the archive +filename+
+  #
+  #Zippy.list('my.zip') #=> ['foo', 'bar']
   def self.list(filename)
     list = nil
     open(filename){|z| list = z.paths }
     list
   end
 
+  
+  #Read the contents of a single entry in +filename+
   def self.read(filename, entry)
     content = nil
     open(filename){|z| content = z[entry] }
