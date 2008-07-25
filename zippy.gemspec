@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name     = "zippy"
-  s.version  = "0.0.1"
+  s.version  = "0.1.0"
   s.date     = "2008-07-25"
   s.summary  = "rubyzip for dummies"
   s.email    = "toredarell@gmail.com"
