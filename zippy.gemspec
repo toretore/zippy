@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.summary  = "rubyzip for dummies"
   s.email    = "toredarell@gmail.com"
   s.homepage = "http://github.com/toretore/zippy"
-  s.description = "rubyzip for dummies"
+  s.description = "Zippy reads and writes zip files"
   #s.has_rdoc = true
   s.author  = "Tore Darell"
   s.files    = ["lib/zippy.rb", "README", "rails/init.rb", "rails/README"]
