@@ -12,11 +12,11 @@ class Zippy
   #If a block is provided, the archive is yielded
   #Takes an optional second parameter which is a hash of entries that will
   #be added after initialization
-  def initialize(filename=nil, entries={})
-    self.filename = filename if filename
+  def initialize(entries_and_options={})
+    entries_and_options.each{|k,v| send("#{k}=", v) if respond_to?("#{k}=") && k.is_a?(Symbol) }
     without_autocommit do
-      entries.each{|k,v| self[k] = v }
-    end unless entries.empty?
+      entries_and_options.each{|k,v| self[k] = v if k.is_a?(String) }
+    end
     yield self if block_given?
   end
 
@@ -126,18 +126,18 @@ class Zippy
   #and then close it
   #
   #Warning: Will overwrite existing file
-  def self.create(filename, entries={}, &b)
+  def self.create(filename, options_and_entries={}, &b)
     File.unlink(filename) if File.exists?(filename)
-    z = new(filename, entries, &b)
+    z = new({:filename => filename}.merge(options_and_entries), &b)
     z.close
     z
   end
 
   #Works the same as new, but require's an explicit filename
   #If a block is provided, it will be closed at the end of the block
-  def self.open(filename)
+  def self.open(filename, options_and_entries={})
     raise(ArgumentError, "file \"#{filename}\" does not exist") unless File.exists?(filename)
-    z = new(filename)
+    z = new({:filename => filename}.merge(options_and_entries))
     if block_given?
       yield z
       z.close
@@ -169,6 +169,15 @@ class Zippy
     content = nil
     open(filename){|z| content = z[entry] }
     content
+  end
+
+
+  def self.[](filename, entry=nil)
+    entry ? read(filename, entry) : list(filename)
+  end
+
+  def self.[]=(filename, entry, content)
+    open(filename){|z| z[entry] = content }
   end
 
 

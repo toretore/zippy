@@ -31,6 +31,34 @@ describe "An archive" do
     zip.should == zap
   end
 
+  it "should set entries from string keys in the passed hash on initialize" do
+    zip = Zippy.new('foo' => 'bar')
+    zip.should include('foo')
+  end
+
+  it "should set options from symbol keys in the passed hash on initialize" do
+    k = Class.new(Zippy){ attr_accessor :foo }
+    zip = k.new(:foo => 'bar')
+    zip.foo.should == 'bar'
+  end
+
+  it "should not set entries from symbol keys on initialize" do
+    k = Class.new(Zippy){ attr_accessor :foo }
+    zip = k.new(:foo => 'bar')
+    zip.should_not include('bar')
+  end
+
+  it "should not set options from string keys on initialize" do
+    k = Class.new(Zippy){ attr_accessor :foo }
+    zip = k.new('foo' => 'bar')
+    zip.foo.should_not == 'bar'
+  end
+
+  it "should not try to set non-exising attributes from options" do
+    zip = Zippy.new('humbaba' => 'scorpion man')
+    zip.should_not respond_to(:humbaba)
+  end
+
 end
 
 describe "New archive without explicit filename" do
@@ -65,7 +93,7 @@ describe "New archive with explicit filename" do
 
   before :each do
     @filename = 'test.zip'
-    @zip = Zippy.new(@filename)
+    @zip = Zippy.new(:filename => @filename)
   end
 
   after :each do
@@ -109,12 +137,6 @@ describe "Archive" do
 
   it "should return nil on z['foo'] if an entry with the name 'foo' doesn't exist" do
     @zip['humbaba'].should be_nil
-  end
-
-  it "should take an optional second parameter with a hash of entries to populate with on initialize" do
-    zip = Zippy.new nil, 'foo' => 'bar', 'bar' => 'baz'
-    zip.should include('foo')
-    zip.should include('bar')
   end
 
   it "should return true on include?('foo') if an entry with the name 'foo' exists, false otherwise" do
