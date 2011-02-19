@@ -7,11 +7,11 @@ class Zippy
 
 
   #Make an archive
-  #Filename is optional; if none is provided, a generated, temporary
+  #Takes a hash of options and entries. Options use symbols and entries use strings.
+  #The :filename option is optional; if none is provided, a generated, temporary
   #filename will be used.
-  #If a block is provided, the archive is yielded
-  #Takes an optional second parameter which is a hash of entries that will
-  #be added after initialization
+  #
+  #Example: Zippy.new(:filename => 'my.zip', 'README' => 'Thank you for reading me.')
   def initialize(entries_and_options={})
     entries_and_options.each{|k,v| send("#{k}=", v) if respond_to?("#{k}=") && k.is_a?(Symbol) }
     without_autocommit do
