@@ -8,8 +8,8 @@ module ::ActionView
       include Compilable
  
       def compile(template)
-        "Zippy.new do |zip|" +
-        (template.respond_to?(:source) ? template.source : template) +
+        "Zippy.new do |zip|\n" +
+        (template.respond_to?(:source) ? template.source : template) + "\n" +
         "end.data"
       end
     end
