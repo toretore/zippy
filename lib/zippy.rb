@@ -17,6 +17,7 @@ class Zippy
     without_autocommit do
       entries_and_options.each{|k,v| self[k] = v if k.is_a?(String) }
     end
+    zipfile.commit if autocommit?
     yield self if block_given?
   end
 
