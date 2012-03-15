@@ -1,3 +1,4 @@
+#encoding: utf-8
 require 'zip/zip'
 
 class Zippy
@@ -104,7 +105,7 @@ class Zippy
   def data
     return nil if empty?
     zipfile.commit
-    File.read(filename)
+    File.read(filename, :encoding => Encoding::BINARY)
   end
 
 

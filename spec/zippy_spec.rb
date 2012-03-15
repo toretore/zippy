@@ -1,3 +1,4 @@
+#encoding: utf-8
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe "An archive" do
@@ -173,7 +174,7 @@ describe "Archive" do
   it "should write the zip data to a file on .write" do
     @zip['foo'] = 'bar'
     @zip.write('test.zip').should be_true
-    File.read('test.zip').should =~ /^PK/
+    File.read('test.zip', :encoding => Encoding::BINARY).should =~ /^PK/
   end
 
   it "should return false on .write if it's empty" do
@@ -248,7 +249,7 @@ describe "Zippy." do
     Zippy.create 'test.zip' do |zip|
       zip['foo'] = 'bar'
     end
-    File.read('test.zip').should =~ /^PK/
+    File.read('test.zip', :encoding => Encoding::BINARY).should =~ /^PK/
   end
 
   it "create should require an explicit filename" do
