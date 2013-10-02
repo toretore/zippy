@@ -1,5 +1,5 @@
 #encoding: utf-8
-require 'zip/zip'
+require 'zip'
 
 class Zippy
 
@@ -120,7 +120,7 @@ class Zippy
 
 
   def zipfile
-    @zipfile ||= Zip::ZipFile.new(filename, true)
+    @zipfile ||= Zip::File.new(filename, true)
   end
 
 
