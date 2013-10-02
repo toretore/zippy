@@ -164,7 +164,7 @@ describe "Archive" do
 
   it "should return the archive data on .data" do
     @zip['foo'] = 'bar'
-    @zip.data.should =~ /^PK/ #Zip files start with "PK"
+    @zip.data[0..1].should == 'PK' #Zip files start with "PK"
   end
 
   it "should return nil on .data if it's empty" do
