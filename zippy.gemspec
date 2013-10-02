@@ -10,5 +10,5 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.files         = ["lib/zippy.rb", "README", "LICENSE"]
   s.require_paths = ['lib']
-  s.add_dependency("rubyzip", [">= 0.9.1"])
+  s.add_dependency("rubyzip", [">= 1.0.0"])
 end
