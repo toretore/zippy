@@ -23,7 +23,7 @@ describe "An archive" do
 
   it "should have a zipfile attribute" do
     @zip.should respond_to('zipfile')
-    @zip.zipfile.should be_an_instance_of(Zip::ZipFile)
+    @zip.zipfile.should be_an_instance_of(Zip::File)
   end
 
   it "should yield self on initialize" do
